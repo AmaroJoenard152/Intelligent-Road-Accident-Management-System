@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Road Accidents Visualization</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='visualization/css/visualization.css') }}">
+    <!---- SideNav ----->
+    <link rel="stylesheet" href="{{ url_for('static', filename='sideNav/css/sidenav.css') }}">
+    <script src="{{ url_for('static', filename='sideNav/js/sidenav.js') }}"></script>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <!---- SideNav ----->
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+
+    <!---- Header ----->
+    <link rel="stylesheet" href="{{ url_for('static', filename='header/css/header.css') }}">
+    <script src="{{ url_for('static', filename='header/js/header.js') }}"></script>
+    <!---- Header ----->
+
+
+    <!---- RainMap----->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='html/RainMap/css/leaflet.rainviewer.css') }}">
+    <!---- RainMap----->
+
+</head>
+<body>
+    <div class="head-container">
+        <div class="nav-bar">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='icon/logo4.svg') }}" class="logo">
+                <div class="text-container">
+                    Intelligent Road Accident Management System for Prescriptive and Vulnerability Modelling Using
+                    Machine Learning Analytics
+                </div>
+            </div>
+            <!-- Navigation Container Inside Main Container -->
+            <div class="nav-container">
+                <div class="date-containers">
+                    <!-- <p>Philippine Standard Time</p> -->
+                    <div id="datetime"></div>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar">
+            <div class="logo_details">
+                <i class="bx bxl-audible icon"></i>
+                <div class="logo_name">IRMS</div>
+                <i class="bx bx-menu" id="btn"></i>
+            </div>
+            <ul class="nav-list">
+
+                <li>
+                    <a href="{{ url_for('homepage.homepage') }}">
+                        <i class="bx bx-grid-alt"></i>
+                        <span class="link_name">Dashboard</span>
+                    </a>
+                    <span class="tooltip">Dashboard</span>
+                </li>
+                <li>
+                    <a href="{{ url_for('webmap.webmap') }}">
+                        <i class="bx bx-map"></i>
+                        <span class="link_name">Web Map</span>
+                    </a>
+                    <span class="tooltip">Web Map</span>
+                </li>
+                <li>
+                    <a class="active">
+                        <i class="bx bx-pie-chart-alt-2"></i>
+                        <span class="link_name">Visualization</span>
+                    </a>
+                    <span class="tooltip">Visualization</span>
+                </li>
+                <li>
+                    <a href="{{ url_for('report.report') }}">
+                        <i class="bx bx-folder"></i>
+                        <span class="link_name">Report</span>
+                    </a>
+                    <span class="tooltip">Report</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="main-container">
+        <div class="row">
+            <div class="col">
+                <div class="flex-container">
+                    <div class="container">
+                        <div class="date-container">
+                            <h1>Visualization</h1>
+                            <form id="filterForm" method="POST" action="{{ url_for('visualization.visualization') }}">
+                                <div class="daterange-group">
+                                    <label for="start_date" class="form-label">Start Date:</label>
+                                    <input type="date" id="start_date" name="start_date" class="form-input">
+                                </div>
+                                <div class="daterange-group">
+                                    <label for="end_date" class="form-label">End Date:</label>
+                                    <input type="date" id="end_date" name="end_date" class="form-input">
+                                    <button type="submit" class="form-btn submit">Search</button>
+                                    <button type="button" id="reloadBtn" class="form-btn cancel">Reset</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col rainfall-container">
+                <div class="flex-container">
+                    <div class="container">
+                        <h2>Rainfall Map Viewer</h2>
+                        <div id="rainmap" class="container"></div>
+                    </div>
+                    <div class="container">
+                        <h2>Time Series Heatmap</h2>
+                        <div class="plot-content">
+                            {{ heatmap_plot_html | safe }}
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col">
+                <div class="flex-container">
+                    <div class="container">
+                        <h2>Number of Accidents by Month</h2>
+                        <div class="plot-content">
+                            {{ month_plot_html | safe }}
+                        </div>
+                    </div>
+        
+                    <div class="container">
+                        <h2>Number of Victims and Suspects</h2>
+                        <div class="plot-content">
+                            {{ number_plot_html | safe }}
+                        </div>
+                    </div>
+                </div>        
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col">
+                <div class="flex-container">
+                    <div class="container">
+                        <h2>Road Accidents From Different Barangays</h2>
+                        <div class="plot-content">
+                            {{ location_plot_html | safe }}
+                        </div>
+                    </div>
+        
+                    <div class="container">
+                        <h2>Offenses Recorded</h2>
+                        <div class="plot-content">
+                            {{ offense_plot_html | safe }}
+                        </div>
+                    </div>
+        
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="flex-container">
+                    <div class="container">
+                        <h2>Vehicles Involved in Road Accidents</h2>
+                        <div class="plot-content">
+                            {{ vehicle_plot_html | safe }}
+                        </div>
+                    </div>
+                    <div class="container">
+                        <h2>Gender of Victims and Suspects</h2>
+                        <div class="plot-content">
+                            {{ gender_plot_html | safe }}
+                        </div>
+                    </div>
+                </div>        
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="flex-container">
+                    <div class="container">
+                        <h2>Age Distribution of Victims</h2>
+                        <div class="plot-content">
+                            {{ victims_age_html | safe }}
+                        </div>
+                    </div>
+                    <div class="container">
+                        <h2>Age Distribution of Suspects</h2>
+                        <div class="plot-content">
+                            {{ suspects_age_html | safe }}
+                        </div>
+                    </div>
+                </div>        
+            </div>
+        </div>
+
+        <div id="modal" class="modal">
+            <span class="close">×</span>
+            <div class="modal-content">
+                <img id="modal-image">
+            </div>
+        </div>
+    </div>
+
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="{{ url_for('static', filename='html/RainMap/js/leaflet.rainviewer.js') }}"></script>
+  <script src="{{ url_for('static', filename='visualization/js/visualization.js') }}"></script>
+  <script>
+
+  </script>
+</body>
+</html>

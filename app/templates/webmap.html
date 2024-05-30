@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Road Accidents Visualization</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='webmap/css/webmap.css') }}">
+    <!---- Header ----->
+    <link rel="stylesheet" href="{{ url_for('static', filename='header/css/header.css') }}">
+    <script src="{{ url_for('static', filename='header/js/header.js') }}"></script>
+    <!---- Header ----->
+
+
+    <!---- SideNav ----->
+    <link rel="stylesheet" href="{{ url_for('static', filename='sideNav/css/sidenav.css') }}">
+    <script src="{{ url_for('static', filename='sideNav/js/sidenav.js') }}"></script>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <!---- SideNav ----->
+
+    <!---- Heat Map ----->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <!---- Heat Map ----->
+
+    <!-- Leaflet Heatmap Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-heat@0.2.0/dist/leaflet-heat.js"></script>
+    <!-- Leaflet Heatmap Plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.heat/0.2.0/leaflet-heat.js"></script>
+
+    <!-- Leaflet Search Plugin -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+</head>
+<body>
+  <div class="head-container">
+    <div class="nav-bar">
+        <div class="logo-container">
+            <img src="{{ url_for('static', filename='icon/logo4.svg') }}" class="logo">
+            <div class="text-container">
+                Intelligent Road Accident Management System for Prescriptive and Vulnerability Modelling Using
+                Machine Learning Analytics
+            </div>
+        </div>
+        <!-- Navigation Container Inside Main Container -->
+        <div class="nav-container">
+
+            <div class="date-containers">
+                <div id="datetime"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="logo_details">
+            <i class="bx bxl-audible icon"></i>
+            <div class="logo_name">IRMS</div>
+            <i class="bx bx-menu" id="btn"></i>
+        </div>
+        <ul class="nav-list">
+
+            <li>
+                <a href="{{ url_for('homepage.homepage') }}">
+                    <i class="bx bx-grid-alt"></i>
+                    <span class="link_name">Dashboard</span>
+                </a>
+                <span class="tooltip">Dashboard</span>
+            </li>
+            <li>
+                <a class="active">
+                    <i class="bx bx-map"></i>
+                    <span class="link_name">Web Map</span>
+                </a>
+                <span class="tooltip">Web Map</span>
+            </li>
+            <li>
+                <a href="{{ url_for('visualization.visualization') }}">
+                    <i class="bx bx-pie-chart-alt-2"></i>
+                    <span class="link_name">Visualization</span>
+                </a>
+                <span class="tooltip">Visualization</span>
+            </li>
+            <li>
+                <a href="{{ url_for('report.report') }}">
+                    <i class="bx bx-folder"></i>
+                    <span class="link_name">Report</span>
+                </a>
+                <span class="tooltip">Report</span>
+            </li>
+        </ul>
+    </div>
+  </div>
+  <div class="main-container">
+    <div class="details-container">
+        <div class="text-header">
+          <h2>About Urdaneta City</h2>
+          <p class="intro">Urdaneta is a landlocked component city in the coastal province of Pangasinan.
+              The city has a land area of 98.21 square kilometers or 37.92 square miles which constitutes 1.80% of Pangasinan's total area.
+              Its population as determined by the 2020 Census was 144,577. This represented 4.57% of the total population of Pangasinan province, or 2.73% of the overall population of the Ilocos Region.
+              Based on these figures, the population density is computed at 1,472 inhabitants per square kilometer or 3,813 inhabitants per square mile.</p>
+        </div>
+        <div class="text-content">
+          <h2>Prescription</h2>
+            <div class="prescription">
+                <p>{{ prescription }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="map-container">
+      <div class="map-head">
+        <div class="dropdown-container">
+          <select id="dropdown-menu" onchange="changeContent()" class="select-input">
+            <option value="gmap-map">Google Map</option>
+            <option value="gsat-map">Google Satellite</option>
+            <option value="topo-map">Topography</option>
+            <option value="dark-map">Dark Map</option>
+            <option value="heat-map">Heat Map</option>
+          </select>
+        </div>
+        <div class="search-container">
+          <input type="text" id="latitude" placeholder="Latitude" class="form-input" required autocomplete="off">
+          <input type="text" id="longitude" placeholder="Longitude" class="form-input" required autocomplete="off">
+          <button onclick="searchCoordinates()" class="form-btn submit">Search</button>
+          <button onclick="refreshMap()" class="form-btn cancel">Reset</button>
+        </div>
+      </div>
+      <div class="map-body">
+        <!-- Content specific to Google Map -->
+        <div id="gmap-map" class="map map-content"></div>
+
+        <!-- Content specific to Google Satellite -->
+        <div id="gsat-map" class="map map-content"></div>
+
+        <!-- Content specific to Topography -->
+        <div id="topo-map" class="map map-content"></div>
+
+        <!-- Content specific to Dark Map -->
+        <div id="dark-map" class="map map-content"></div>
+
+        <!-- Content specific to Heat Map -->
+        <div id="heat-map" class="map map-content"></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    var accidentsData = {{ accidents_data | tojson }};
+    var maps = {}; // Object to hold map instances
+    var hoverTimeout;
+
+    // Initialize both maps
+    function initializeMaps() {
+    maps['gmap-map'] = L.map('gmap-map').setView([15.9753, 120.5670], 12);
+    maps['gsat-map'] = L.map('gsat-map').setView([15.9753, 120.5670], 12);
+    maps['topo-map'] = L.map('topo-map').setView([15.9753, 120.5670], 12);
+    maps['dark-map'] = L.map('dark-map').setView([15.9753, 120.5670], 12);
+
+    // Add default tile layers to all maps
+    addTileLayer('gmap-map', 'm');
+    addTileLayer('gsat-map', 's');
+    addTileLayer('topo-map', 'topo');
+    addTileLayer('dark-map', 'dark');
+
+    // Create markers for all accidentsData on both maps
+    Object.keys(maps).forEach(function (key) {
+      var map = maps[key];
+      accidentsData.forEach(function (accident) {
+        var marker = L.marker([parseFloat(accident['LATITUDE']), parseFloat(accident['LONGITUDE'])])
+          .addTo(map)
+          .on('mouseover', function (event) {
+            hoverTimeout = setTimeout(function () {
+              showDataOnHover(event);
+            }, 1000); // 1 second delay
+          })
+          .on('mouseout', function () {
+            clearTimeout(hoverTimeout);
+            map.closePopup();
+          })
+          .on('click', showDataOnClick);
+        marker.accidentData = accident; // Attach data to marker
+      });
+    });
+  }
+
+
+    // Function to refresh the map and clear input fields
+    function refreshMap() {
+      // Clear input fields
+      document.getElementById('latitude').value = '';
+      document.getElementById('longitude').value = '';
+
+      // Refresh map based on the selected map type
+      var dropdown = document.getElementById("dropdown-menu");
+      var selectedValue = dropdown.value;
+
+      // Refresh specific map container
+      var mapContainer = document.getElementById(selectedValue);
+      if (mapContainer) {
+          // Clear existing layers from the map
+          maps[selectedValue].eachLayer(function (layer) {
+              maps[selectedValue].removeLayer(layer);
+          });
+
+          // Reinitialize tile layer
+          addTileLayer(selectedValue, getTileType(selectedValue));
+
+          // Add markers to the map
+          addMarkersToMap(maps[selectedValue]);
+      }
+  }
+
+    // Function to get tile layer type based on map ID
+    function getTileType(mapId) {
+        if (mapId === 'gmap-map' || mapId === 'gsat-map') {
+            return mapId === 'gmap-map' ? 'm' : 's';
+        } else if (mapId === 'topo-map') {
+            return 'topo';
+        } else if (mapId === 'dark-map') {
+            return 'dark';
+        }
+    }
+
+      // Function to add markers to the map based on map ID
+      function addMarkersToMap(map) {
+      var customIcon = L.icon({
+          iconUrl: '{{ url_for("static", filename="icon/fill.svg") }}',
+          iconSize: [16, 16],
+          iconAnchor: [8, 8],
+      });
+
+      accidentsData.forEach(function (accident) {
+          var marker = L.marker([parseFloat(accident['LATITUDE']), parseFloat(accident['LONGITUDE'])])
+              .addTo(map)
+              .on('mouseover', function (event) {
+                  hoverTimeout = setTimeout(function () {
+                      showDataOnHover(event);
+                  }, 1000); // 1 second delay
+              })
+              .on('mouseout', function () {
+                  clearTimeout(hoverTimeout);
+                  map.closePopup();
+              })
+              .on('click', showDataOnClick);
+          marker.accidentData = accident;
+      });
+  }
+
+
+    // Add tile layer to the specified map
+    function addTileLayer(mapId, type) {
+      var map = maps[mapId];
+      var url;
+      if (type === 'm') {
+        url = 'https://mt1.google.com/vt/lyrs=' + type + '&x={x}&y={y}&z={z}';
+      } else if (type === 's') {
+        url = 'https://mt1.google.com/vt/lyrs=' + type + '&x={x}&y={y}&z={z}';
+      } else if (type === 'topo') {
+        url = 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png';
+      } else if (type === 'dark') {
+        url = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+      }
+
+      L.tileLayer(url, {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      }).addTo(map);
+    }
+
+  // Function to search for coordinates
+  function searchCoordinates() {
+    var latitude = parseFloat(document.getElementById('latitude').value);
+    var longitude = parseFloat(document.getElementById('longitude').value);
+    var matchFound = false;
+
+    // Loop through all maps to find matching coordinates
+    Object.keys(maps).forEach(function (key) {
+      var map = maps[key];
+      map.eachLayer(function (layer) {
+        if (layer instanceof L.Marker && layer.getLatLng().lat === latitude && layer.getLatLng().lng === longitude) {
+          matchFound = true;
+          // Highlight matching marker and show popup
+          layer.setIcon(L.divIcon({ className: 'highlight-marker' }));
+          layer.bindPopup('Matched Location: ' + layer.accidentData['BARANGAY']).openPopup();
+        }
+      });
+    });
+
+    if (!matchFound) {
+      alert('No matching data found.');
+    }
+  }
+
+
+    // Function to show data on hover
+    function showDataOnHover(event) {
+    var marker = event.target;
+    var accidentData = marker.accidentData;
+
+    // Find all data points with the same coordinates
+    var matchingData = accidentsData.filter(function (accident) {
+      return (
+        parseFloat(accident['LATITUDE']) === marker.getLatLng().lat &&
+        parseFloat(accident['LONGITUDE']) === marker.getLatLng().lng
+      );
+    });
+
+    if (matchingData.length > 0) {
+      var popupContent = '<ul style="list-style-type: none; padding: 0;">';
+      matchingData.forEach(function (accident) {
+        popupContent += `
+          <li><b>ID:</b> ${accident['ID']}</li>
+          <li><b>Barangay:</b> ${accident['BARANGAY']}</li>
+          <li><b>Date Committed:</b> ${accident['DATE COMMITTED']}</li>
+          <li><b>Time Committed:</b> ${accident['TIME COMMITTED']}</li>
+          <li><b>Victims Count:</b> ${accident['VICTIMS COUNT']}</li>
+          <li><b>Vehicles Involved:</b> ${accident['VEHICLE KIND']}</li>
+        `;
+      });
+      popupContent += '</ul>';
+      marker.bindPopup(popupContent).openPopup();
+    }
+    }
+
+    // Function to show data on click
+    function showDataOnClick(event) {
+    var marker = event.target;
+    var accidentData = marker.accidentData;
+
+    // Find all data points with the same coordinates
+    var matchingData = accidentsData.filter(function (accident) {
+      return (
+        parseFloat(accident['LATITUDE']) === marker.getLatLng().lat &&
+        parseFloat(accident['LONGITUDE']) === marker.getLatLng().lng
+      );
+    });
+
+    if (matchingData.length > 0) {
+      var popupContent = '<ul style="list-style-type: none; padding: 0;">';
+      matchingData.forEach(function (accident) {
+        popupContent += `
+          <li><b>ID:</b> ${accident['ID']}</li>
+          <li><b>Barangay:</b> ${accident['BARANGAY']}</li>
+          <li><b>Date Committed:</b> ${accident['DATE COMMITTED']}</li>
+          <li><b>Time Committed:</b> ${accident['TIME COMMITTED']}</li>
+          <li><b>Victims Count:</b> ${accident['VICTIMS COUNT']}</li>
+          <li><b>Vehicles Involved:</b> ${accident['VEHICLE KIND']}</li>
+        `;
+      });
+      popupContent += '</ul>';
+      marker.bindPopup(popupContent).openPopup();
+    }
+    }
+
+    // Function to change content based on dropdown selection
+    function changeContent() {
+      var dropdown = document.getElementById("dropdown-menu");
+      var selectedValue = dropdown.value;
+      var contentContainers = document.querySelectorAll(".map-content");
+      var searchContainer = document.querySelector(".search-container");
+
+      // Hide all content containers
+      contentContainers.forEach(function (container) {
+          container.style.display = "none";
+      });
+
+      // Show the selected content container
+      var selectedContainer = document.getElementById(selectedValue);
+      if (selectedContainer) {
+          selectedContainer.style.display = "block";
+      }
+
+      // Hide search container if selected value is 'heat-map'
+      if (selectedValue === 'heat-map') {
+          searchContainer.style.display = "none";
+      } else {
+          searchContainer.style.display = "block";
+      }
+
+      // Update tile layer based on selected map
+      if (selectedValue === 'topo-map') {
+          addTileLayer('topo-map', 'topo');
+      } else if (selectedValue === 'dark-map') {
+          addTileLayer('dark-map', 'dark');
+      } else if (selectedValue === 'heat-map') { // Handle Heat Map selection
+          createHeatMap(); // Create Heatmap
+      }
+    }
+
+    // Function to create Heatmap
+    function createHeatMap() {
+      var heatMapContainer = document.getElementById('heat-map');
+      if (heatMapContainer) {
+          var map = L.map('heat-map').setView([15.9753, 120.5670], 12);
+
+          // Add OpenStreetMap as base layer
+          L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+              attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          }).addTo(map);
+
+          // Create Heatmap layer with valid data points (assuming addressPoints variable is available)
+          var heatMapData = accidentsData.map(function (accident) {
+              return [parseFloat(accident['LATITUDE']), parseFloat(accident['LONGITUDE'])];
+          });
+
+          var heat = L.heatLayer(heatMapData, { radius: 50 }).addTo(map);
+      }
+    }
+
+    // Initialize maps and default content on page load
+    document.addEventListener("DOMContentLoaded", function () {
+      initializeMaps();
+      changeContent(); // Ensure default content is shown
+    });
+
+  </script>
+
+</body>
+</html>
+
+
+

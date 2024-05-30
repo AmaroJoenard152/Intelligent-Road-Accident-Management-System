@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crime Report Form</title>
+    <!-- Global -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='report/css/report.css') }}">
+    <script src="{{ url_for('static', filename='report/js/report.js') }}"></script>
+
+    <!-- Icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <!-- Header -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='header/css/header.css') }}">
+    <script src="{{ url_for('static', filename='header/js/header.js') }}"></script>
+
+    <!-- Sidenav -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='sideNav/css/sidenav.css') }}">
+    <script src="{{ url_for('static', filename='sideNav/js/sidenav.js') }}"></script>
+
+</head>
+
+<body>
+<div class="head-container">
+    <div class="nav-bar">
+        <div class="logo-container">
+            <img src="{{ url_for('static', filename='icon/logo4.svg') }}" class="logo">
+            <div class="text-container">
+                Intelligent Road Accident Management System for Prescriptive and Vulnerability Modelling Using Machine Learning Analytics
+            </div>
+        </div>
+        <div class="date-containers">
+            <div id="datetime"></div>
+        </div>
+    </div>
+</div>
+<div class="sidebar">
+    <div class="logo_details">
+        <i class="bx bxl-audible icon"></i>
+        <div class="logo_name">IRMS</div>
+        <i class="bx bx-menu" id="btn"></i>
+    </div>
+    <ul class="nav-list">
+        <li>
+            <a href="{{ url_for('homepage.homepage') }}">
+                <i class="bx bx-grid-alt"></i>
+                <span class="link_name">Dashboard</span>
+            </a>
+            <span class="tooltip">Dashboard</span>
+        </li>
+        <li>
+            <a href="{{ url_for('webmap.webmap') }}">
+                <i class="bx bx-map"></i>
+                <span class="link_name">Web Map</span>
+            </a>
+            <span class="tooltip">Web Map</span>
+        </li>
+        <li>
+            <a href="{{ url_for('visualization.visualization') }}">
+                <i class="bx bx-pie-chart-alt-2"></i>
+                <span class="link_name">Visualization</span>
+            </a>
+            <span class="tooltip">Visualization</span>
+        </li>
+        <li>
+            <a class="active">
+                <i class="bx bx-folder"></i>
+                <span class="link_name">Report</span>
+            </a>
+            <span class="tooltip">Report</span>
+        </li>
+    </ul>
+</div>
+
+    <div class="main-container">
+        <div class="form-container">
+            <form id="crimeReportForm" action="/submit-crime-report" onsubmit="submitForm(event)" method="post">
+                <div class="form-heading">
+                    <h2>Incident Details</h2>
+                    <p>Fill in all the fields</p>
+                </div>
+                <div class="form-body">
+                    <div class="form-content">
+                        <div class="form-column">
+                            <div class="form-group">
+                                <label for="dateCommitted" class="form-label">Date Committed</label>
+                                <input type="date" id="dateCommitted" name="dateCommitted" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="timeCommitted" class="form-label">Time Committed</label>
+                                <input type="time" id="timeCommitted" name="timeCommitted" class="form-input"
+                                    placeholder="HH:MM:SS" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="number" id="monthCommitted" name="monthCommitted"
+                                    class="form-input input-month">
+                            </div>
+                            <div class="form-group">
+                                <input type="number" id="dayCommitted" name="dayCommitted" class="form-input input-day">
+                            </div>
+                            <div class="form-group">
+                                <input type="number" id="yearCommitted" name="yearCommitted" class="form-input input-year">
+                            </div>
+                            <div class="form-group">
+                                <label for="barangay" class="form-label">Barangay</label>
+                                <select id="barangay" name="barangay" class="form-input">
+                                    <option value="" selected hidden>Select Barangay</option>
+                                    <option value="Anonas">Anonas</option>
+                                    <option value="Bactad East">Bactad East</option>
+                                    <option value="Bayaoas">Bayaoas</option>
+                                    <option value="Bolaoen">Bolaoen</option>
+                                    <option value="Cabaruan">Cabaruan</option>
+                                    <option value="Cabuloan">Cabuloan</option>
+                                    <option value="Camanang">Camanang</option>
+                                    <option value="Camantiles">Camantiles</option>
+                                    <option value="Casantaan">Casantaan</option>
+                                    <option value="Catablan">Catablan</option>
+                                    <option value="Cayambanan">Cayambanan</option>
+                                    <option value="Consolacion">Consolacion</option>
+                                    <option value="Dilan Paurido">Dilan Paurido</option>
+                                    <option value="Dr. Pedro T. Orata (Bactad Proper)">Dr. Pedro T. Orata (Bactad Proper)
+                                    </option>
+                                    <option value="Labit Proper">Labit Proper</option>
+                                    <option value="Labit West">Labit West</option>
+                                    <option value="Mabanogbog">Mabanogbog</option>
+                                    <option value="Macalong">Macalong</option>
+                                    <option value="Nancalobasaan">Nancalobasaan</option>
+                                    <option value="Nancamaliran East">Nancamaliran East</option>
+                                    <option value="Nancamaliran West">Nancamaliran West</option>
+                                    <option value="Nancayasan">Nancayasan</option>
+                                    <option value="Oltama">Oltama</option>
+                                    <option value="Palina East">Palina East</option>
+                                    <option value="Palina West">Palina West</option>
+                                    <option value="Pinmaludpod">Pinmaludpod</option>
+                                    <option value="Poblacion">Poblacion</option>
+                                    <option value="San Jose">San Jose</option>
+                                    <option value="San Vicente">San Vicente</option>
+                                    <option value="Santa Lucia">Santa Lucia</option>
+                                    <option value="Santo Domingo">Santo Domingo</option>
+                                    <option value="Sugcong">Sugcong</option>
+                                    <option value="Tipuso">Tipuso</option>
+                                    <option value="Tulong">Tulong</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="vehicleKind" class="form-label">Vehicle Type</label>
+                                <input type="text" id="vehicleKind" name="vehicleKind" class="form-input"
+                                    placeholder="e.g. CAR" required autocomplete="off" oninput="this.value = this.value.toUpperCase()">
+                            </div>
+                            <div class="form-group">
+                                <label for="offense" class="form-label">Offense</label>
+                                <input type="text" id="offense" name="offense" class="form-input"
+                                    placeholder="e.g. RECKLESS IMPRUDENCE" required autocomplete="off" oninput="this.value = this.value.toUpperCase()">
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="latitude" class="form-label">Latitude</label>
+                                <input type="number" step="any" id="latitude" name="latitude" class="form-input"
+                                    placeholder="e.g. 15.25" required autocomplete="off">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="longitude" class="form-label">Longitude</label>
+                                <input type="number" step="any" id="longitude" name="longitude" class="form-input"
+                                    placeholder="e.g. 124.2345" required autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="form-column">
+                            <div>
+                                <div class="form-group">
+                                    <label for="victimsAge" class="form-label">Victim's Age</label>
+                                    <input type="number" id="victimsAge" name="victimsAge" class="form-input"
+                                        placeholder="e.g. 21" maxlength="3"
+                                        oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                        required autocomplete="off">
+                                </div>
+                                <div class="form-group">
+                                    <label for="victimsCount" class="form-label">Victim/s Count</label>
+                                    <input type="number" id="victimsCount" name="victimsCount" class="form-input"
+                                        placeholder="e.g. 1" required autocomplete="off">
+                                </div>
+                                <div class="form-group">
+                                    <label for="victimsGender" class="form-label">Victim's Gender</label>
+                                    <select id="victimsGender" name="victimsGender" class="form-input" required>
+                                        <option value="" selected hidden>Select Gender</option>
+                                        <option value="M">M</option>
+                                        <option value="F">F</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="form-group">
+                                    <label for="suspectsAge" class="form-label">Suspect's Age</label>
+                                    <input type="number" id="suspectsAge" name="suspectsAge" class="form-input"
+                                        placeholder="e.g. 21" maxlength="3"
+                                        oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                        required autocomplete="off">
+                                </div>
+                                <div class="form-group">
+                                    <label for="suspectsCount" class="form-label">Suspect/s Count</label>
+                                    <input type="number" id="suspectsCount" name="suspectsCount" class="form-input"
+                                        placeholder="e.g. 1" required autocomplete="off">
+                                </div>
+                                <div class="form-group">
+                                    <label for="suspectsGender" class="form-label">Suspect's Gender</label>
+                                    <select id="suspectsGender" name="suspectsGender" class="form-input" required>
+                                        <option value="" selected hidden>Select Gender</option>
+                                        <option value="M">M</option>
+                                        <option value="F">F</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-column">
+                            <div class="form-group">
+                                <label for="rainfall" class="form-label">Rainfall Index (mm/h)</label>
+                                <input type="number" step="any" id="rainfall" name="rainfall" class="form-input"
+                                    placeholder="e.g. 2.4" required autocomplete="off">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="tMin" class="form-label">Min Temperature</label>
+                                <input type="number" step="any" id="tMin" name="tMin" class="form-input"
+                                       placeholder="e.g. 20.5" required autocomplete="off">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="tMax" class="form-label">Max Temperature</label>
+                                <input type="number" step="any" id="tMax" name="tMax" class="form-input"
+                                       placeholder="e.g. 32.2" required autocomplete="off">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="windSpeed" class="form-label">Wind Speed (km/s)</label>
+                                <input type="text" id="windSpeed" name="windSpeed" class="form-input"
+                                    placeholder="e.g. 3" required autocomplete="off">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="windDirection" class="form-label">Wind Direction (0-360)</label>
+                                <input type="number" id="windDirection" name="windDirection" class="form-input" min="0"
+                                    max="360" placeholder="e.g 360" required autocomplete="off">
+                                <div id="errorMessage"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-footer">
+                    <input type="button" value="Clear" onclick="clearForm()" class="form-btn cancel">
+                    <input type="submit" value="Submit" class="form-btn submit">
+                </div>
+            </form>
+        </div>
+        <div class="table-container"  id="table-container">
+            <div class="table-heading">
+                <h2>Crime Report Data</h2>
+                <div class="table-subtitle">
+                   <p>Here are the details from the datatable.</p>
+                </div>
+            </div>
+            <div class="table-subheading">
+                <div class="search-container">
+                    <div class="daterange-container">
+                        <div class="daterange-group">
+                            <label for="startDate" class="form-label date">Start Date</label>
+                            <input type="date" class="form-input" id="startDate">
+                        </div>
+                        <div class="daterange-group">
+                            <label for="endDate" class="form-label date">End Date</label>
+                            <div class="group-2">
+                                <!-- <div> -->
+                                <input type="date" class="form-input" id="endDate">
+                                <button onclick="searchByDateRange()" class="form-btn submit">Apply</button>
+                                <button onclick="downloadCSV()" class="form-btn submit">Download</button>
+                                <!-- </div>
+                            <div> -->
+                                <select id="barangayDropdown" name="barangay" class="form-input dropdown">
+                                    <option value="">Select a Barangay</option>
+                                    <option value="Anonas">Anonas</option>
+                                    <option value="Bactad East">Bactad East</option>
+                                    <option value="Bayaoas">Bayaoas</option>
+                                    <option value="Bolaoen">Bolaoen</option>
+                                    <option value="Cabaruan">Cabaruan</option>
+                                    <option value="Cabuloan">Cabuloan</option>
+                                    <option value="Camanang">Camanang</option>
+                                    <option value="Camantiles">Camantiles</option>
+                                    <option value="Casantaan">Casantaan</option>
+                                    <option value="Catablan">Catablan</option>
+                                    <option value="Cayambanan">Cayambanan</option>
+                                    <option value="Consolacion">Consolacion</option>
+                                    <option value="Dilan Paurido">Dilan Paurido</option>
+                                    <option value="Dr. Pedro T. Orata (Bactad Proper)">Dr. Pedro T. Orata (Bactad Proper)
+                                    </option>
+                                    <option value="Labit Proper">Labit Proper</option>
+                                    <option value="Labit West">Labit West</option>
+                                    <option value="Mabanogbog">Mabanogbog</option>
+                                    <option value="Macalong">Macalong</option>
+                                    <option value="Nancalobasaan">Nancalobasaan</option>
+                                    <option value="Nancamaliran East">Nancamaliran East</option>
+                                    <option value="Nancamaliran West">Nancamaliran West</option>
+                                    <option value="Nancayasan">Nancayasan</option>
+                                    <option value="Oltama">Oltama</option>
+                                    <option value="Palina East">Palina East</option>
+                                    <option value="Palina West">Palina West</option>
+                                    <option value="Pinmaludpod">Pinmaludpod</option>
+                                    <option value="Poblacion">Poblacion</option>
+                                    <option value="San Jose">San Jose</option>
+                                    <option value="San Vicente">San Vicente</option>
+                                    <option value="Santa Lucia">Santa Lucia</option>
+                                    <option value="Santo Domingo">Santo Domingo</option>
+                                    <option value="Sugcong">Sugcong</option>
+                                    <option value="Tipuso">Tipuso</option>
+                                    <option value="Tulong">Tulong</option>
+                                </select>
+                                <button onclick="searchByBarangay()" class="form-btn submit">Search</button>
+                                <button class="form-btn cancel" onclick="clearAndRefresh()">Reset</button>
+                                <!-- </div> -->
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="table-body">
+                <table id="crimeReportTable" class="table-content">
+                    <thead>
+                        <tr>
+                            <th>Actions</th>
+                            <th>ID</th>
+                            <th>Barangay</th>
+                            <th>Date Committed</th>
+                            <th>Time Committed</th>
+                            <th>Offense</th>
+                            <th>Victims Count</th>
+                            <th>Vehicle Kind</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data rows will be dynamically added here -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination" id="pagination">
+                <div class="pagination-btns" id="pagination-btns"></div>
+            </div>
+        </div>
+
+
+        <div class="overlay" id="overlay"></div>
+
+        <div class="popup-container" id="viewPopup">
+            <form>
+                <div class="popup-heading">
+                    <span class="close" onclick="closePopup()">&times;</span>
+                    <h2>Crime Details</h2>
+                    <p>Here are the details from the datatable.</p>
+                </div>
+                <div class="popup-content" id="popupContent">
+                    <div class="row-container">
+                        <div class="column-container">
+                            <!-- Crime Information -->
+                            <div class="section">
+                                <p>Crime Information</p>
+                                <div>
+                                    <label for="" class="form-label">ID</label>
+                                    <input type="text" class="form-input" id="idPop" disabled>
+                                </div>
+                                <div>
+                                    <label for="" class="form-label">Offense</label>
+                                    <input type="text" class="form-input" id="crimeTypePop"
+                                           oninput="this.value = this.value.toUpperCase()"  autocomplete="off">
+                                </div>
+                                <div>
+                                    <label for="" class="form-label">Date Committed</label>
+                                    <input type="date" class="form-input" id="datePop">
+                                </div>
+                                <div>
+                                    <label for="" class="form-label">Time Committed</label>
+                                    <input type="time" class="form-input" id="timePop">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row-container">
+                        <div class="column-container">
+                            <!-- Location Information -->
+                            <div class="section">
+                                <p>Location Information</p>
+                                <div>
+                                    <label for="" class="form-label">Barangay</label>
+                                    <select class="form-input" id="locationPop"></select>
+                                </div>
+                                <div>
+                                    <label for="" class="form-label">Longitude</label>
+                                    <input type="number" step="any" class="form-input" id="longitudePop"
+                                     autocomplete="off">
+                                </div>
+                                <div>
+                                    <label for="" class="form-label">Latitude</label>
+                                    <input type="number" step="any" class="form-input" id="latitudePop"
+                                     autocomplete="off">
+                                </div>
+                            </div>
+
+                            <!-- Victim Information -->
+                            <div class="section">
+                                <p>Victim Information</p>
+                                <div>
+                                    <label for="" class="form-label">Victim's Age</label>
+                                    <input type="number" class="form-input" id="victimAgePop"
+                                     autocomplete="off">
+                                </div>
+                                <div>
+                                    <label for="" class="form-label">Victim's Gender</label>
+                                    <select class="form-input" id="victimGenderPop"></select>
+                                </div>
+                                <div>
+                                    <label for="" class="form-label">Victim's Count</label>
+                                    <input type="number" class="form-input" id="victimCountPop"
+                                     autocomplete="off">
+                                </div>
+                            </div>
+                            <!-- Suspect Information -->
+                            <div class="section">
+                                <p>Suspect Information</p>
+                                <div>
+                                    <label for="" class="form-label">Suspect's Age</label>
+                                    <input type="number" class="form-input" id="suspectAgePop"
+                                     autocomplete="off">
+                                </div>
+                                <div>
+                                    <label for="" class="form-label">Suspect's Gender</label>
+                                    <select class="form-input" id="suspectGenderPop"></select>
+                                </div>
+                                <div>
+                                    <label for="" class="form-label">Suspect's Count</label>
+                                    <input type="number" class="form-input" id="suspectCountPop"
+                                     autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row-container">
+                        <div class="column-container">
+                            <!-- Additional Information -->
+                            <div class="section">
+                                <p>Additional Information</p>
+                                <div>
+                                    <label for="" class="form-label">Vehicle Kind</label>
+                                    <input type="text" class="form-input" id="vehicleKindPop"
+                                           oninput="this.value = this.value.toUpperCase()" autocomplete="off">
+                                </div>
+                                <div>
+                                    <label for="" class="form-label">Rainfall</label>
+                                    <input type="number" step="any" class="form-input" id="rainfallPop"
+                                     autocomplete="off">
+                                </div>
+                                <div>
+                                    <label for="" class="form-label">TMAX</label>
+                                    <input type="number" step="any" class="form-input" id="tmaxPop"
+                                     autocomplete="off">
+                                </div>
+                                <div>
+                                    <label for="" class="form-label">TMIN</label>
+                                    <input type="number" step="any" class="form-input" id="tminPop"
+                                     autocomplete="off">
+                                </div>
+                                <div>
+                                    <label for="" class="form-label">Wind Speed</label>
+                                    <input type="number" class="form-input" step="any" id="windSpeedPop"
+                                     autocomplete="off">
+                                </div>
+                                <div>
+                                    <label for="" class="form-label">Wind Direction</label>
+                                    <input type="number" class="form-input"  step="any" id="windDirectionPop"
+                                     autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="popup-footer">
+                    <button class="form-btn cancel" id="cancelButtonPop">Cancel</button>
+                    <button class="form-btn submit" id="saveButtonPop">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#dateCommitted').on('change', function () {
+            var selectedDate = $(this).val();
+
+            // Make AJAX request to fetch weather data
+            axios.get('/get_weather_data', {
+                params: {
+                    date: selectedDate
+                }
+            })
+            .then(function (response) {
+                // Handle successful response
+                var data = response.data;
+                $('#rainfall').val(data.rainfall);
+                $('#tMin').val(data.tMin);
+                $('#tMax').val(data.tMax);
+                $('#windSpeed').val(data.windSpeed);
+                $('#windDirection').val(data.windDirection);
+            })
+            .catch(function (error) {
+                // Handle error
+                console.error('Failed to fetch weather data:', error);
+                // Clear input fields if there's an error
+                $('#rainfall').val('');
+                $('#tMin').val('');
+                $('#tMax').val('');
+                $('#windSpeed').val('');
+                $('#windDirection').val('');
+            });
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const dateInput = document.getElementById("dateCommitted");
+        const today = new Date().toISOString().split("T")[0];
+        dateInput.setAttribute("max", today);
+
+        document.getElementById("crimeReportForm").addEventListener("submit", function(event) {
+            const selectedDate = new Date(dateInput.value);
+            const currentDate = new Date(today);
+            if (selectedDate > currentDate) {
+                event.preventDefault();
+                alert("User cannot choose a future date.");
+                dateInput.value = ""; // Reset the date picker
+            }
+        });
+
+        // Check for success flag in URL and display a success message
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('success')) {
+            alert('Successfully submitted new data!');
+            // Remove the success flag from the URL to prevent showing the message again on page refresh
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    });
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+
+</html>

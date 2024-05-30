@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Road Accidents Visualization</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='homepage/css/homepage.css') }}">
+    <!-- <link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css' rel='stylesheet'> -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+    <!---- Header ----->
+    <link rel="stylesheet" href="{{ url_for('static', filename='header/css/header.css') }}">
+    <script src="{{ url_for('static', filename='header/js/header.js') }}"></script>
+    <!---- Header ----->
+
+    <!---- SideNave ----->
+    <link rel="stylesheet" href="{{ url_for('static', filename='sideNav/css/sidenav.css') }}">
+    <script src="{{ url_for('static', filename='sideNav/js/sidenav.js') }}"></script>
+
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <!---- SideNave ----->
+
+    <!---- Weather Widget ----->
+    <link rel="stylesheet" href="{{ url_for('static', filename='weatherWidget/css/style.css') }}">
+
+    <script src="{{ url_for('static', filename='weatherWidget/js/script.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <!---- Weather Widget ----->
+
+
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+</head>
+<body>
+
+   <div class="head-container">
+        <div class="nav-bar">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='icon/logo4.svg') }}" class="logo">
+                <div class="text-container">
+                    Intelligent Road Accident Management System for Prescriptive and Vulnerability Modelling Using
+                    Machine Learning Analytics
+                </div>
+            </div>
+
+                <div class="date-containers">
+                    <div id="datetime"></div>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar">
+            <div class="logo_details">
+                <i class="bx bxl-audible icon"></i>
+                <div class="logo_name">IRMS</div>
+                <i class="bx bx-menu" id="btn"></i>
+            </div>
+            <ul class="nav-list">
+                <li>
+                    <a class="active">
+                        <i class="bx bx-grid-alt"></i>
+                        <span class="link_name">Dashboard</span>
+                    </a>
+                    <span class="tooltip">Dashboard</span>
+                </li>
+                <li>
+                    <a href="{{ url_for('webmap.webmap') }}">
+                        <i class="bx bx-map"></i>
+                        <span class="link_name">Web Map</span>
+                    </a>
+                    <span class="tooltip">Web Map</span>
+                </li>
+                <li>
+                    <a href="{{ url_for('visualization.visualization') }}">
+                        <i class="bx bx-pie-chart-alt-2"></i>
+                        <span class="link_name">Visualization</span>
+                    </a>
+                    <span class="tooltip">Visualization</span>
+                </li>
+                <li>
+                    <a href="{{ url_for('report.report') }}">
+                        <i class="bx bx-folder"></i>
+                        <span class="link_name">Report</span>
+                    </a>
+                    <span class="tooltip">Report</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="sub-container">
+            <div class="main-widget-container">
+              <div class="widget-container">
+                  <div class="weather-side">
+                      <div class="weather-gradient"></div>
+                      <div class="date-container">
+                          <h2 class="date-dayname"></h2>
+                          <span class="date-day"></span>
+                          <i class="fa-solid fa-location-dot"></i>
+                          <span class="location"></span>
+                      </div>
+                      <div class="weather-container">
+                          <span class="weather-icon"></span>
+                          <h1 class="weather-temp"></h1>
+                          <h3 class="weather-desc"></h3>
+                      </div>
+                  </div>
+                  <div class="info-side">
+                      <div class="today-info-container">
+                          <div class="today-info">
+                            <input class="location-input" type="text" id="city" value="Urdaneta" disabled>
+                            <div class="humidity">
+                                <span class="material-symbols-outlined icon-blue">
+                                    water_drop
+                                    </span>
+                                <span class="value"></span>
+                                <span class="title">Humidity</span>
+                                <div class="clear"></div>
+                            </div>
+                            <div class="wind">
+                                <span class="material-symbols-outlined icon-blue">
+                                    air
+                                    </span>
+                                <span class="value"></span>
+                                <span class="title">Wind Speed</span>
+                                <div class="clear"></div>
+                            </div>
+                            <div class="wind-direction">
+                                    <span class="material-symbols-outlined icon-blue">
+                                        open_with
+                                        </span>
+                                <span class="value"></span>
+                                <span class="title">Wind Direction</span>
+                                <div class="clear"></div>
+                            </div>
+                          </div>
+                      </div>
+                      <div class="week-container">
+                          <ul class="week-list">
+                              <li>
+                                <span class="day-temp"></span>
+                                <span class="day-icon"></span>
+                                <span class="day-name"></span>
+                              </li>
+                              <li>
+                                <span class="day-temp"></span>
+                                <span class="day-icon"></span>
+                                <span class="day-name"></span>
+                              </li>
+                              <li>
+                                <span class="day-temp"></span>
+                                <span class="day-icon"></span>
+                                <span class="day-name"></span>
+                              </li>
+                              <li>
+                                <span class="day-temp"></span>
+                                <span class="day-icon"></span>
+                                <span class="day-name"></span>
+                              </li>
+                              <li>
+                                <span class="day-temp"></span>
+                                <span class="day-icon"></span>
+                                <span class="day-name"></span>
+                              </li>
+                          </ul>
+                      </div>
+                  </div>
+              </div>
+            </div>
+            <div class="main-tend-container">
+
+                <div class="trend-container">
+                    <div class="trend-header">
+                      <h2>Trend and Predicted Road Accidents</h2>
+                      <button id="showPrescription" class="form-btn submit" onclick="showPrescription()">Show Forecast</button>
+                    </div>
+                    <div class="trend-content">
+                      {{ trend_plot_html | safe }}
+                      <p class="prescription">{{ prescription }}</p>
+                    </div>
+                  </div>
+            </div>
+
+        </div>
+        <div class="overlay" id="overlay"></div>
+        <div id="prescriptionModal" class="prescription-container">
+            <div class="forecast-head">
+                <span class="close" onclick="closePrescription()">&times;</span>
+                <h2>Forecast Description</h2>
+            </div>
+            <div class="forecast-body">
+                <div id="prescriptionContent"></div>
+            </div>
+        </div>
+        <div class="main-map-container">
+
+            <div class="map-container">
+                <h2>Barangay-Level Data Visualization</h2>
+              <div id="map"></div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
+
+
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="{{ url_for('static', filename='homepage/js/homepage.js') }}"></script>
+<script src="{{ url_for('static', filename='homepage/js/map.js') }}"></script>

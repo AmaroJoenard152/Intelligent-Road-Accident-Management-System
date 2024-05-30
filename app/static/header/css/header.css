@@ -1,0 +1,91 @@
+
+/* Reset default browser styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+/* Body style */
+body {
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+}
+.logo {
+    max-width: 50px;
+    max-width: 50px;
+}
+.text-container {
+    font-weight: 400;
+    width: 700px;
+    color: var(--color-black);
+    font-size: medium;
+}
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+.navigation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    background-color:var(--color-light) ;
+    height: 36px;
+    padding: 14px;
+}
+.nav-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    margin-right: 5px;
+}
+.navigation-link {
+    text-decoration: none; /* Remove underline */
+    font-size: small;
+    color:var(--color-font);
+    padding-bottom: 2px; /* Add some space for the border */
+    border-bottom: 2px solid transparent; /* Transparent border initially */
+    transition: border-bottom-color 0.3s; /* Smooth transition for border color */
+}
+.navigation-link:hover {
+    border-bottom-color: #333; /* Change border color on hover */
+}
+/* Navigation Bar Styles */
+.nav-bar {
+    background-color: #ffffff;
+    height: 78px;
+    color: #000000;
+    position: fixed;
+    /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
+    top: 0;
+    overflow: hidden;
+    z-index: 105;
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    /* margin-left: 78px; */
+    min-width: 100vw;
+    justify-content: space-between;
+}
+.nav-bar .nav-bar-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 1rem;
+    /* Add padding to the navbar content */
+}
+.menu-icon {
+    cursor: pointer;
+    display: inline-block;
+}
+.date-containers {
+    padding: 8px;
+    color: var(--color-black);
+    width: 175px;
+    font-size: 12px;
+    text-align: right;
+}
